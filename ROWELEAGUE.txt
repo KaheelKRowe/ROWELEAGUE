@@ -1,0 +1,48 @@
+ROWELEAGUE
+
+This league will have 20-30 teams with their own names(currently 24)
+each team will start with 12 players that have their own randomized names and age
+
+-- This will be for a separate game mode, currently working on GM mode --
+Once the player starts the game they will be prompted to enter a first and last name, height, position, weight, jersey number, and choose a player archetype.
+
+
+Games will be decided based on overall, the higher a team's overall the better chance they will have at winning a game.
+
+60 games, 32 away, 32 home. Teams will play other teams from the opposing conference twice per season, 24 games total for opposing conference games, a team will play other teams within its own conference 3 time per season accounting for 33 games,
+the remaining 3 games will be played against the team's division rivals.
+
+Playoffs will mostly be based off nba's playoff system.
+14 teams will be in the playoffs, the 1st seed from each conference will get a free round raising the stakes of the 1 seed.
+the remaining 10 will be in the draft lottery for the chance at the number 1 pick.
+
+West						East
+1						1				
+F						F	
+	1				1
+	_				_
+4						4
+5						5
+		_		_
+			_	
+		_		_
+3						3
+6						6
+	_				_
+	_				_
+2						2
+7						7
+
+*Note, may change playoffs to be instead be based around overall league standing so that the 1 and 2 seed of the league will
+get a free round and allow the truly bad teams at a chance to get young talent.
+
+After each win and loss the player will recieve coins that can be used to upgrade their team.
+this will encourage the player to stay with their drafted team instead of requesting a trade or leaving in free agency.
+
+teams will be able to cut and trade players based off their needs.
+
+Players who are ages 36-39 have a chance to retire, once a player reaches age 40 they are gauranteed to retire.
+
+players will improve yearly based off their age, ages 26-31 are the prime years of a player, after those years the players will begin to regress due to age. 
+
+The player's objective is to try to make the hall of fame, they will do this by accumulating LEGEND POINTS by winning league awards and championships.
