@@ -3,11 +3,13 @@ import random
 from RLplayer import Player
 from RLdata import player_first, player_last, position, conferences
 from RLteam import Team
+from RLcalendar import Calendar
 
 class League:
     def __init__(self):
         self.teams = []
         self.free_agents = []
+        self.calendar = Calendar()
         self.all_players = []
         self.generate_teams()
         self.generate_players()
@@ -97,6 +99,9 @@ class League:
                     played.add(matchup)
                     for game in range(2):
                         self.simulate_game(team, rival)
+            
+        while self.calendar.phase == "Regular Season":
+            self.calendar.advance_day()
 
     # Displays the standings for each conference and division.
     def display_standings(self):
@@ -118,6 +123,7 @@ class League:
 
     # End of season actions, handles removing retiring players and players whose contracts have expired, as resetting team records.
     def end_of_season(self):
+        self.calendar.display_date()
         print(f"\nSeason {self.season} has ended.")
         self.season += 1
         
@@ -144,4 +150,5 @@ class League:
             self.free_agents.append(player)
             for team in self.teams:
                 team.remove_player(player.player_id)
+        
             

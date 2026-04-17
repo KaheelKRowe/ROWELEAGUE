@@ -16,7 +16,7 @@ class Team:
     
     # add player to team if roster spots and salary cap allow
     def add_player(self, player):
-        if len(self.roster) < 12 and self.payroll + player.salary <= self.salary_cap:
+        if len(self.roster) < 15 and self.payroll + player.salary <= self.salary_cap:
             self.roster.append(player)
             self.payroll += player.salary
             return True
