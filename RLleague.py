@@ -4,6 +4,7 @@ from RLplayer import Player
 from RLdata import player_first, player_last, position, conferences
 from RLteam import Team
 from RLcalendar import Calendar
+from RLdraft import Draft
 
 class League:
     def __init__(self):
@@ -189,6 +190,10 @@ class League:
                             team.add_player(best)
                             self.free_agents.remove(best)
                             print(f"{team.team_name} signed {best.player_first} {best.player_last} and released {weakest.player_first} {weakest.player_last}")
+    
+    def run_draft(self):
+        draft = Draft(self)
+        draft.conduct_draft()
 
         
             
