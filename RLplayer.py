@@ -18,6 +18,7 @@ class Player:
         self.salary = self.generate_contract()
         self.contract_years = self.generate_contract_years()
 
+
     # Potential is based on age, with younger players having a chance at higher potential
     def calculate_potential(self):
         if self.age <= 22:
@@ -166,5 +167,67 @@ class Player:
                 # Players that are 40 must retire once that season ends.
         self.contract_value = self.generate_value()
 
+class Rookie(Player):
+    def __init__(self, player_first, player_last, position):
+        super().__init__(player_first, player_last, position)
+        self.age = random.randint(18, 22)
+        self.ratings = self.rookie_ratings()
+        self.potential = self.calculate_potential()
+        self.salary = 0
+        self.contract_years = 3
 
+    def calculate_potential(self):
+        potential_tiers = [
+        (90, 99),   # S
+        (80, 89),   # A
+        (70, 79),   # B
+        (60, 69),   # C
+        (50, 59)    # D
+        ]
+        weights = [5, 12, 28, 30, 25]  # percentages adding to 100
 
+        tier = random.choices(potential_tiers, weights=weights, k=1)[0]
+        return random.randint(tier[0], tier[1])
+
+    def rookie_ratings(self):
+        if self.position == 'PG':
+            ratings = {
+            'Shooting': random.randint(60, 80),
+            'Defense': random.randint(45, 60),
+            'Passing': random.randint(65, 85),
+            'Rebounding': random.randint(40, 55),
+            'Athleticism': random.randint(50, 99)
+            }
+        elif self.position == 'SG':
+            ratings = {
+            'Shooting': random.randint(60, 85),
+            'Defense': random.randint(55, 70),    
+            'Passing': random.randint(55, 65),
+            'Rebounding': random.randint(40, 55),
+            'Athleticism': random.randint(55, 99)
+            }
+        elif self.position == 'SF':
+            ratings = {
+            'Shooting': random.randint(60, 80),
+            'Defense': random.randint(60, 75),    
+            'Passing': random.randint(50, 65),
+            'Rebounding': random.randint(50, 65),
+            'Athleticism': random.randint(60, 99)
+            }
+        elif self.position == 'PF':
+            ratings = {
+            'Shooting': random.randint(40, 60),
+            'Defense': random.randint(60, 85),    
+            'Passing': random.randint(40, 50),
+            'Rebounding': random.randint(60, 80),
+            'Athleticism': random.randint(55, 99)
+            }
+        else: # C
+            ratings = {
+            'Shooting': random.randint(40, 50),
+            'Defense': random.randint(60, 85),    
+            'Passing': random.randint(40, 45),
+            'Rebounding': random.randint(70, 85),
+            'Athleticism': random.randint(40, 90)
+            }
+        return ratings

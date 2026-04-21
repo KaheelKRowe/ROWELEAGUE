@@ -1,4 +1,4 @@
-from RLleague import League
+
 
 # Displays a list of the teams in the league to the user and prompts them to choose one, will provide an error if an invalid name or id is entered and prompts the user to try again until a valid team is selected.
 def display_teams(league):
@@ -138,7 +138,7 @@ def free_agency_day(league):
 # Displays the main menu.
 def main_menu(league):
     choice = None
-    while choice != '6':
+    while choice != '7':
         league.calendar.display_date()
         print("\nMain Menu:")
         print("1. View Team Roster")
@@ -146,7 +146,8 @@ def main_menu(league):
         print("3. View League Standings")
         print("4. Trades")
         print("5. Simulation")
-        print("6. Exit")
+        print("6. Draft")
+        print("7. Exit")
         choice = input("Enter your choice: ")
         if choice == '1':
             league.get_team_roster(league.user_team.team_name)
@@ -170,8 +171,15 @@ def main_menu(league):
                 if confirm.lower() == 'y':
                     league.simulate_season()
                     league.display_standings()
+                    league.run_draft()
+                    free_agency_day(league)
                     league.end_of_season()
         elif choice == '6':
+            if league.calendar.phase != "Draft":
+                print("\nThe draft is not currently open")
+            else:
+                league.run_draft()
+        elif choice == '7':
             print("Exiting the game. Goodbye!")
             break
         else:
