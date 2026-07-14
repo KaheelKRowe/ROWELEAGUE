@@ -94,13 +94,15 @@ def sign_free_agent(league):
 
 # Runs the free agency period, letting the user compete with CPU teams for free agents day by day.
 def free_agency_day(league):
+
     while True:
         league.calendar.display_date()
         print("\nFree Agency")
         print("1. View Free Agents")
         print("2. Sign Free Agents")
         print("3. Advance Day")
-        print("4. Exit Free Agency")
+        print("4. End Free Agency")
+        print("5. Exit Free Agency")
         choice = input("Enter your choice: ")
         if choice == '1':
             display_free_agents(league)
@@ -108,16 +110,40 @@ def free_agency_day(league):
             sign_free_agent(league)
         elif choice == '3':
             league.cpu_free_agency_day()
+            prev_label = league.calendar.get_season_label()
             league.calendar.advance_day()
             print(f"\n--- Day Advanced ---")
             if league.calendar.phase != "Free Agency":
                 print(f"\nFree Agency has ended!")
-                league.end_of_season()
+                league.end_of_season(prev_label)
                 return
         elif choice == '4':
+            skip_free_agency(league)
+        elif choice == '5':
             return
         else:
             print("Invalid choice. Please enter a valid choice")
+
+def skip_free_agency(league):
+    confirm = input("\nWould you like to actively manage free agency, or skip to the end? (manage/skip): ")
+    if confirm.lower() == 'skip':
+        confirm_skip = input("Are you sure? You won't be able to sign free agents this period. (y/n): ")
+        if confirm_skip.lower() == 'y':
+            while league.calendar.phase == "Free Agency":
+                league.cpu_free_agency_day()
+                prev_label = league.calendar.get_season_label()
+                league.calendar.advance_day()
+            print(f"\nFree Agency skipped! Phase advanced to: {league.calendar.phase}")
+            league.end_of_season(prev_label)
+            return
+
+def display_champions(league):
+    print("\nChampionship History")
+    print("-" * 30)
+    if not league.champions:
+        print("No championships yet.")
+    for champ in league.champions:
+        print(champ)
 
 # Displays the main menu and handles user input for all game actions.
 def main_menu(league):
@@ -132,7 +158,9 @@ def main_menu(league):
         print("6. Advance Phase")
         print("7. Draft")
         print("8. Free Agency")
-        print("9. Exit")
+        print("9. Playoffs")
+        print("10. Championship history")
+        print("11. Exit")
         choice = input("Enter your choice: ")
         if choice == '1':
             league.get_team_roster(league.user_team.team_name)
@@ -156,15 +184,17 @@ def main_menu(league):
             current = league.calendar.phase
             if current == "Regular Season":
                 print("\nYou must simulate the season first!")
-            elif current in ["Playoffs", "Trade Deadline"]:
-                print(f"\nAdvancing through {current}...")
-                while league.calendar.phase not in ["Draft", "Free Agency"]:
+            elif current == "Trade Deadline":
+                print(f"\nAdvancing through Trade Deadline...")
+                while league.calendar.phase == "Trade Deadline":
                     league.calendar.advance_day()
                 print(f"\nPhase advanced to: {league.calendar.phase}")
             elif current == "Draft":
                 print("\nThe draft is open — use option 7 to run the draft!")
             elif current == "Free Agency":
                 print("\nFree agency is open — use option 8 to manage free agency!")
+            elif current == "Playoffs":
+                print("\nPlayoffs are open — use option 9 to run the playoffs!")
             else:
                 league.calendar.advance_day()
                 print(f"\nAdvanced to: {league.calendar.phase}")
@@ -185,7 +215,18 @@ def main_menu(league):
             else:
                 free_agency_day(league)
         elif choice == '9':
+            if league.calendar.phase != "Playoffs":
+                print(f"\nPlayoffs are not currently open.")
+                print(f"Current phase: {league.calendar.phase}")
+            else:
+                league.run_playoffs()
+                while league.calendar.phase == "Playoffs":
+                    league.calendar.advance_day()
+                print(f"\nPlayoffs complete! Phase advanced to: {league.calendar.phase}")
+        elif choice == '10':
+            display_champions(league)
+        elif choice == '11':
             print("Exiting the game. Goodbye!")
             break
         else:
-            print("Invalid choice. Please enter 1-9.")
+            print("Invalid choice. Please enter 1-11.")

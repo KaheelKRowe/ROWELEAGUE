@@ -46,7 +46,6 @@ class Draft:
         
         # second round follows same order
         self.draft_order.extend(self.draft_order[:24].copy())
-        print(f"DEBUG: Draft order length: {len(self.draft_order)}")
 
     def get_rookie_salary(self):
         if self.current_pick <= 2:
@@ -86,6 +85,9 @@ class Draft:
                 else:
                     if best is None or player.overall > best.overall:
                         best = player
+            
+        if best is None and self.rookie_pool:
+            best = max(self.rookie_pool, key=lambda p: p.overall)
 
         if best:
             best.salary = self.get_rookie_salary()
@@ -210,13 +212,11 @@ class Draft:
     def conduct_draft(self):
         self.determine_draft_order()
         user_picks = [i+1 for i, t in enumerate(self.draft_order) if t == self.league.user_team]
-        print(f"\nSeason {self.league.season} Draft")
+        print(f"\n{self.league.calendar.get_draft_year()} Draft")
         print(f"Your pick positions: {user_picks}")
         
-        draft_results = {team.team_name: [] for team in self.league.teams}
         
         for _ in range(self.total_picks):
-            print(f"DEBUG: Processing pick {self.current_pick}")
             team = self.draft_order[self.current_pick - 1]
             if team == self.league.user_team:
                 self.user_pick()
