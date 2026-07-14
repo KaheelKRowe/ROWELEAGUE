@@ -42,3 +42,9 @@ class Calendar:
         self.draft_date = date(self.season_end_year, 5, 15)
         self.free_agency_start = date(self.season_end_year, 7, 10)
         self.season_end = date(self.season_end_year, 10, 21)
+
+    def get_season_label(self):
+        return f"{str(self.season_start_year)[-2:]}-{str(self.season_end_year)[-2:]}"
+    
+    def get_draft_year(self):
+        return self.season_end_year

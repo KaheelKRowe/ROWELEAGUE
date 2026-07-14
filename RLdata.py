@@ -47,12 +47,12 @@ player_first = ['John', 'Bill', 'Jimmy', 'Drazen', 'Mose', 'Deandre', 'Tyrone', 
                 'Kyrie', 'Stephen', 'Kevin', 'Michael', 'Larry', 'Jaren', 'Steven', 'Trey', 'Santi', 'OG', 'Ace', 
                 'Scottie', 'Devin', 'Miles', 'Bruce', 'Jalen', 'Carter', 'Jamal', 'Brandon', 'Julian', 'Stephon', 
                 'Jared', 'Max', 'Alex', 'Cody', 'Josh', 'Bryce', 'Jordan', 'Bob', 'Dwyane', 'Isaiah', 'Mike', 'Cade',
-                'Anthony', 'Egor', 'Rudy', 'Mo', 'Shaun', 'Derrick', 'Walter', 'Zach', 'Nate', 'Victor', 'Kyle', 'Peter', 'Paul']
+                'Anthony', 'Egor', 'Rudy', 'Mo', 'Shaun', 'Derrick', 'Walter', 'Zach', 'Nate', 'Victor', 'Kyle', 'Peter', 'Paul', 'Jason']
 
 player_last = ['Wayne', 'White', 'Jordan', 'James', 'Irving', 'Bryant', 'Curry', 'Morant', 'Westbrook', 'Durant',
-               'Clark', 'Dada', 'Duguid', 'Rowe', 'Brooks', 'Parker', 'Doe', 'Baker', 'Alexander', 'Jokic', 'Edwards',
+               'Clark', 'Clarke', 'Dada', 'Duguid', 'Rowe', 'Brooks', 'Parker', 'Doe', 'Baker', 'Alexander', 'Jokic', 'Edwards',
                'Thompson', 'Fox', 'Perry', 'Edey', 'Doncic', 'Rodman', 'Pippen', 'George', 'Green', 'Harper', 'Holiday',
                'Huff', 'Hyland', 'Ingram', 'Johnson', 'Jackson', 'Lillard', 'Love', 'Lopez', 'Nash', 'Rose', 'Russell',
-               'Smith', 'West', 'Young', 'Martin', 'Mitchell', 'Bunyun', 'Robinson', 'Sharpe', 'Sims', 'Tatum', 'VanVleet']
+               'Smith', 'West', 'Young', 'Martin', 'Mitchell', 'Bunyun', 'Robinson', 'Sharpe', 'Sims', 'Tatum', 'VanVleet', 'Collins']
 
 position = ['PG', 'SG', 'SF', 'PF', 'C']

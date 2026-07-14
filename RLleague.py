@@ -5,6 +5,7 @@ from RLdata import player_first, player_last, position, conferences
 from RLteam import Team
 from RLcalendar import Calendar
 from RLdraft import Draft
+from RLplayoffs import Playoffs
 
 class League:
     def __init__(self):
@@ -17,6 +18,7 @@ class League:
         self.distribute_players()
         self.user_team = None
         self.season = 1
+        self.champions = []
     
     # Takes a list of team names and creates Team objects aswell as adding teams to their respective conferences
     def generate_teams(self):
@@ -70,7 +72,7 @@ class League:
 
     # Simulates a season with 4 divisional games, 3 conference games, and 2 non-conference games, with a total of 60 games for each team.
     def simulate_season(self):
-        print(f"\nSimulating Season {self.season}...")
+        print(f"\nSimulating Season {self.calendar.get_season_label()}...")
         played = set()
 
         for team in self.teams:
@@ -123,9 +125,11 @@ class League:
                     print(f"  {team.team_name:<20} {team.wins:<5} {team.losses:<5} {pct:.3f}")
 
     # End of season actions, handles removing retiring players and players whose contracts have expired, as resetting team records.
-    def end_of_season(self):
+    def end_of_season(self, season_label=None):
+        if season_label is None:
+            season_label = self.calendar.get_season_label()
         self.calendar.display_date()
-        print(f"\nSeason {self.season} has ended.")
+        print(f"\nSeason {season_label} has ended.")
         self.season += 1
         
         for team in self.teams:
@@ -195,5 +199,10 @@ class League:
         draft = Draft(self)
         draft.conduct_draft()
 
+    def run_playoffs(self):
+        playoffs = Playoffs(self)
+        playoffs.determine_seeds()
+        playoffs.display_seeds()
+        playoffs.create_bracket()
         
             
