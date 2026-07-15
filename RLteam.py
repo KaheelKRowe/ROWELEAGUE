@@ -12,6 +12,7 @@ class Team:
         self.salary_cap = 140_000_000
         self.payroll = 0
         self.dead_cap = 0
+        self.dead_cap = 0
         self.wins = 0
         self.losses = 0
         self.tier = None
@@ -19,11 +20,13 @@ class Team:
     # add player to team if roster spots and salary cap allow
     def add_player(self, player):
         if len(self.roster) < 15 and self.payroll + player.salary <= self.salary_cap:
+        if len(self.roster) < 15 and self.payroll + player.salary <= self.salary_cap:
             self.roster.append(player)
             self.payroll += player.salary
             return True
         return False
     
+    # remove player from team and adjust payroll and dead cap
     # remove player from team and adjust payroll and dead cap
     def remove_player(self, player_id):
         for player in self.roster:
@@ -31,11 +34,13 @@ class Team:
                 self.roster.remove(player)
                 self.payroll -= player.salary
                 self.dead_cap += player.salary
+                self.dead_cap += player.salary
                 return True
         return False
     
     # calculate available salary
     def available_salary(self):
+        return self.salary_cap - self.payroll - self.dead_cap
         return self.salary_cap - self.payroll - self.dead_cap
     
     # calculate average team overall

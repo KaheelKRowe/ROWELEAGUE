@@ -8,4 +8,3 @@ display_teams(league)
 main_menu(league)
 
 print(f"\nFree Agents: {len(league.free_agents)}")
-

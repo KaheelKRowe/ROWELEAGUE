@@ -13,6 +13,7 @@ class League:
         self.teams = []
         self.free_agents = []
         self.calendar = Calendar()
+        self.calendar = Calendar()
         self.all_players = []
         self.generate_teams()
         self.generate_players()
@@ -20,6 +21,7 @@ class League:
         assign_all_tiers(self, "preseason")
         self.user_team = None
         self.season = 1
+        self.champions = []
         self.champions = []
     
     # Takes a list of team names and creates Team objects aswell as adding teams to their respective conferences
@@ -74,6 +76,7 @@ class League:
 
     # Simulates a season with 4 divisional games, 3 conference games, and 2 non-conference games, with a total of 60 games for each team.
     def simulate_season(self):
+        print(f"\nSimulating Season {self.calendar.get_season_label()}...")
         print(f"\nSimulating Season {self.calendar.get_season_label()}...")
         played = set()
 
@@ -135,11 +138,17 @@ class League:
             season_label = self.calendar.get_season_label()
         self.calendar.display_date()
         print(f"\nSeason {season_label} has ended.")
+    def end_of_season(self, season_label=None):
+        if season_label is None:
+            season_label = self.calendar.get_season_label()
+        self.calendar.display_date()
+        print(f"\nSeason {season_label} has ended.")
         self.season += 1
         
         for team in self.teams:
             team.wins = 0
             team.losses = 0
+            team.dead_cap = 0
             team.dead_cap = 0
 
         to_retire = []
