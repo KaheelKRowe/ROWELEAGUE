@@ -3,17 +3,24 @@ import random
 from RLplayer import Player
 from RLdata import player_first, player_last, position, conferences
 from RLteam import Team
+from RLcalendar import Calendar
+from RLdraft import Draft
+from RLplayoffs import Playoffs
+from RLtrades import assign_all_tiers
 
 class League:
     def __init__(self):
         self.teams = []
         self.free_agents = []
+        self.calendar = Calendar()
         self.all_players = []
         self.generate_teams()
         self.generate_players()
         self.distribute_players()
+        assign_all_tiers(self, "preseason")
         self.user_team = None
         self.season = 1
+        self.champions = []
     
     # Takes a list of team names and creates Team objects aswell as adding teams to their respective conferences
     def generate_teams(self):
@@ -67,7 +74,7 @@ class League:
 
     # Simulates a season with 4 divisional games, 3 conference games, and 2 non-conference games, with a total of 60 games for each team.
     def simulate_season(self):
-        print(f"\nSimulating Season {self.season}...")
+        print(f"\nSimulating Season {self.calendar.get_season_label()}...")
         played = set()
 
         for team in self.teams:
@@ -97,6 +104,12 @@ class League:
                     played.add(matchup)
                     for game in range(2):
                         self.simulate_game(team, rival)
+            
+        while self.calendar.phase == "Regular Season":
+            self.calendar.advance_day()
+
+        if self.calendar.phase == "Trade Deadline":
+            assign_all_tiers(self, "deadline")
 
     # Displays the standings for each conference and division.
     def display_standings(self):
@@ -117,13 +130,17 @@ class League:
                     print(f"  {team.team_name:<20} {team.wins:<5} {team.losses:<5} {pct:.3f}")
 
     # End of season actions, handles removing retiring players and players whose contracts have expired, as resetting team records.
-    def end_of_season(self):
-        print(f"\nSeason {self.season} has ended.")
+    def end_of_season(self, season_label=None):
+        if season_label is None:
+            season_label = self.calendar.get_season_label()
+        self.calendar.display_date()
+        print(f"\nSeason {season_label} has ended.")
         self.season += 1
         
         for team in self.teams:
             team.wins = 0
             team.losses = 0
+            team.dead_cap = 0
 
         to_retire = []
         to_free_agency = []
@@ -144,4 +161,57 @@ class League:
             self.free_agents.append(player)
             for team in self.teams:
                 team.remove_player(player.player_id)
+
+    # Handles the logic for the cpu free agency signing, including the positonal need based signing, and upgrading.    
+    def cpu_free_agency_day(self):
+        for team in self.teams:
+            if team != self.user_team:
+                needs = team.get_positional_needs()
+                    
+                if needs:
+                    # need based signing
+                    for pos in needs:
+                        best = None
+                        for player in self.free_agents:
+                            if player.position == pos and player.salary <= team.available_salary():
+                                if best is None or player.overall > best.overall:
+                                    best = player
+                        if best:
+                            team.add_player(best)
+                            self.free_agents.remove(best)
+                            best.acquired_date = self.calendar.current_date
+                            print(f"{team.team_name} signed {best.player_first} {best.player_last} | {best.position} | OVR: {best.overall}")
+                else:
+                    # upgrade check
+                    for pos in ['PG', 'SG', 'SF', 'PF', 'C']:
+                        roster_at_pos = [p for p in team.roster if p.position == pos]
+                        if not roster_at_pos:
+                            continue
+                        weakest = min(roster_at_pos, key=lambda p: p.overall)
+                        best = None
+                        for player in self.free_agents:
+                            if player.position == pos and player.salary <= team.available_salary():
+                                if player.overall > weakest.overall + 3:
+                                    if best is None or player.overall > best.overall:
+                                        best = player
+                        if best:
+                            team.remove_player(weakest.player_id)
+                            self.free_agents.append(weakest)
+                            team.add_player(best)
+                            self.free_agents.remove(best)
+                            best.acquired_date = self.calendar.current_date
+                            print(f"{team.team_name} signed {best.player_first} {best.player_last} and released {weakest.player_first} {weakest.player_last}")
+    
+    # Runs the draft for the league
+    def run_draft(self):
+        draft = Draft(self)
+        draft.conduct_draft()
+    
+    # Runs the playoffs for the league
+    def run_playoffs(self):
+        playoffs = Playoffs(self)
+        playoffs.determine_seeds()
+        playoffs.display_seeds()
+        playoffs.create_bracket()
+        
             
