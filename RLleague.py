@@ -1,7 +1,7 @@
 import random
 
 from RLplayer import Player
-from RLdata import player_first, player_last, position, conferences
+from RLdata import player_first, player_last, position, conferences, ROSTER_BLUEPRINTS, ELITE_THRESHOLD, STARTER_THRESHOLD
 from RLteam import Team
 from RLcalendar import Calendar
 from RLdraft import Draft
@@ -13,15 +13,15 @@ class League:
         self.teams = []
         self.free_agents = []
         self.calendar = Calendar()
-        self.calendar = Calendar()
         self.all_players = []
         self.generate_teams()
-        self.generate_players()
         self.distribute_players()
+        self.generate_free_agents()
+        for team in self.teams:
+            team.assign_minutes()
         assign_all_tiers(self, "preseason")
         self.user_team = None
         self.season = 1
-        self.champions = []
         self.champions = []
     
     # Takes a list of team names and creates Team objects aswell as adding teams to their respective conferences
@@ -33,23 +33,113 @@ class League:
                     self.teams.append(team)
     
     # Creates a list of Player objects and adds them to the free agents pool and all players list
-    def generate_players(self, num_players=400):
+    def generate_free_agents(self, num_players=122):
         for _ in range(num_players):
-            player = Player(player_first, player_last, position)
+            target_overall = random.randint(50, 75)
+            
+            # higher overall correlates with older age
+            if target_overall >= 72:
+                age = random.randint(29, 35)
+            elif target_overall >= 63:
+                age = random.randint(24, 30)
+            else:
+                age = random.randint(20, 26)
+            
+            player = Player(player_first, player_last, position, target_overall=target_overall, age=age)
+            
             self.free_agents.append(player)
             self.all_players.append(player)
+    
+    def get_age_for_tier(self, tier):
+        if tier == "elite":
+            return random.randint(26, 32)  # prime years, matches your develop() prime window
+        elif tier == "starter":
+            return random.randint(22, 33)
+        else:  # role
+            return random.randint(19, 35)  # widest range — could be a raw prospect or a vet
 
+    def build_roster_from_blueprint(self, blueprint, player_first, player_last):
+        all_positions = ['PG', 'SG', 'SF', 'PF', 'C']
+        
+        elite_slots = [slot for slot in blueprint if slot[0] == "elite"]
+        starter_slots = [slot for slot in blueprint if slot[0] == "starter"]
+        role_slots = [slot for slot in blueprint if slot[0] == "role"]
+        
+        roster = []
+        position_counts = {pos: 0 for pos in all_positions}
+        MAX_TOP_TIER_PER_POSITION = 2  # combined elite + starter cap per position
+        
+        # Elite slots — guaranteed unique positions (never repeats within elite itself)
+        available_positions = all_positions.copy()
+        random.shuffle(available_positions)
+        for i, (tier, low, high) in enumerate(elite_slots):
+            pos = available_positions[i]
+            target_overall = random.randint(low, high)
+            age = self.get_age_for_tier(tier)
+            player = Player(player_first, player_last, [pos], target_overall=target_overall, age=age)
+            roster.append(player)
+            position_counts[pos] += 1
+        
+        # Starter slots — respect the combined top-tier cap, spread as evenly as possible
+        for (tier, low, high) in starter_slots:
+            eligible = [pos for pos in all_positions if position_counts[pos] < MAX_TOP_TIER_PER_POSITION]
+            if not eligible:
+                eligible = all_positions  # fallback if somehow everything's capped
+            min_count = min(position_counts[pos] for pos in eligible)
+            candidates = [pos for pos in eligible if position_counts[pos] == min_count]
+            pos = random.choice(candidates)
+            
+            target_overall = random.randint(low, high)
+            age = self.get_age_for_tier(tier)
+            player = Player(player_first, player_last, [pos], target_overall=target_overall, age=age)
+            roster.append(player)
+            position_counts[pos] += 1
+        
+        # Role slots — freely shuffled, no cap needed (depth is fine here)
+        role_positions = (all_positions * ((len(role_slots) // len(all_positions)) + 1))[:len(role_slots)]
+        random.shuffle(role_positions)
+        for (tier, low, high), pos in zip(role_slots, role_positions):
+            target_overall = random.randint(low, high)
+            age = self.get_age_for_tier(tier)
+            player = Player(player_first, player_last, [pos], target_overall=target_overall, age=age)
+            roster.append(player)
+        
+        return roster
+    
     # Distributes players to teams based on their contract value, with higher value players being distributed first to create a more balanced league. If a team cannot afford a player or has no roster spots, the player is returned to the free agents pool.
     def distribute_players(self):
-        self.free_agents.sort(key=lambda p: p.salary, reverse=True)
+        blueprint_list = (
+            ["Rebuilding"] * 10 +
+            ["Retooling"] * 4 +
+            ["Playoff Team"] * 4 +
+            ["Contender"] * 4 +
+            ["Champion Favorite"] * 2
+        )
+        random.shuffle(blueprint_list)
         random.shuffle(self.teams)
-
-        for i in range(12):
-            for team in self.teams:
-                if self.free_agents:
-                    player = self.free_agents.pop(0)
-                    if not team.add_player(player):
-                        self.free_agents.append(player)
+        
+        for team, tier_name in zip(self.teams, blueprint_list):
+            blueprint = ROSTER_BLUEPRINTS[tier_name]
+            roster_players = self.build_roster_from_blueprint(blueprint, player_first, player_last)
+            for player in roster_players:
+                team.add_player(player)
+                self.all_players.append(player)
+        
+        # Safety net — guarantee every team reaches 12 players
+        for team in self.teams:
+            while len(team.roster) < 12:
+                position_counts = {pos: sum(1 for p in team.roster if p.position == pos) for pos in ['PG', 'SG', 'SF', 'PF', 'C']}
+                min_count = min(position_counts.values())
+                eligible_positions = [pos for pos, count in position_counts.items() if count == min_count]
+                chosen_position = random.choice(eligible_positions)
+                
+                target_overall = random.randint(45, 55)
+                age = random.randint(20, 34)
+                filler = Player(player_first, player_last, [chosen_position], target_overall=target_overall, age=age)
+                if team.add_player(filler):
+                    self.all_players.append(filler)
+                else:
+                    break
 
     # Display the roster of a team based on user input, allowing them to select a team by either name or ID. If the team is found, their roster is displayed along with payroll and cap space information. If not found, an error message is shown.
     def get_team_roster(self, team_name):
@@ -58,7 +148,7 @@ class League:
                 print(f"\n{team.team_id} | {team.team_name} | {team.conference} | {team.division} | Team OVR: {team.get_average_overall():.2f} | Payroll: ${team.payroll:,} | Cap Space: ${team.available_salary():,}")
                 print("-" * 60)
                 for player in team.roster:
-                    print(f"{player.player_id} | {player.player_first} {player.player_last} | {player.position} | Age: {player.age} | OVR: {player.overall} | Pot: {player.get_potential_grade()} | Salary: ${player.salary:,} | Years: {player.contract_years}")
+                    print(f"{player.player_id} | {player.player_first} {player.player_last} | {player.position} | Age: {player.age} | OVR: {player.overall} | Pot: {player.get_potential_grade()} | Salary: ${player.salary:,} | Years: {player.contract_years} | MIN: {player.minutes}")
                 return
         print(f"Team '{team_name}' not found.")
     
@@ -77,10 +167,10 @@ class League:
     # Simulates a season with 4 divisional games, 3 conference games, and 2 non-conference games, with a total of 60 games for each team.
     def simulate_season(self):
         print(f"\nSimulating Season {self.calendar.get_season_label()}...")
-        print(f"\nSimulating Season {self.calendar.get_season_label()}...")
         played = set()
 
         for team in self.teams:
+            team.assign_minutes()
             division_rivals = [t for t in self.teams if t.division == team.division and t.team_id != team.team_id]
 
             for rival in division_rivals:
@@ -138,17 +228,12 @@ class League:
             season_label = self.calendar.get_season_label()
         self.calendar.display_date()
         print(f"\nSeason {season_label} has ended.")
-    def end_of_season(self, season_label=None):
-        if season_label is None:
-            season_label = self.calendar.get_season_label()
-        self.calendar.display_date()
-        print(f"\nSeason {season_label} has ended.")
+
         self.season += 1
         
         for team in self.teams:
             team.wins = 0
             team.losses = 0
-            team.dead_cap = 0
             team.dead_cap = 0
 
         to_retire = []
@@ -209,6 +294,7 @@ class League:
                             team.add_player(best)
                             self.free_agents.remove(best)
                             best.acquired_date = self.calendar.current_date
+                            self.refresh_minutes(team)
                             print(f"{team.team_name} signed {best.player_first} {best.player_last} and released {weakest.player_first} {weakest.player_last}")
     
     # Runs the draft for the league
@@ -222,5 +308,9 @@ class League:
         playoffs.determine_seeds()
         playoffs.display_seeds()
         playoffs.create_bracket()
+
+    def refresh_minutes(self, *teams):
+            for team in teams:
+                team.assign_minutes()
         
             

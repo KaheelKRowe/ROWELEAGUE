@@ -30,7 +30,6 @@ def print_player_table(players):
     print(f"\n{'Player ID':<10} {'Name':<22} {'Position':<15} {'Age':<15} {'OVR':<10} {'Pot':<10}")
     print("-" * 80)
     for player in players:
-    for player in players:
         name = f"{player.player_first} {player.player_last}"
         print(f"{player.player_id:<10} | {name:<20} | {player.position:<10} | Age: {player.age:<10} | OVR: {player.overall:<10} | Pot: {player.get_potential_grade():<10}")
 
@@ -98,6 +97,7 @@ def sign_free_agent(league):
                 if league.user_team.add_player(player):
                     league.free_agents.remove(player)
                     player.acquired_date = league.calendar.current_date
+                    league.refresh_minutes(league.user_team)
                     print(f"\nSigned {player.player_first} {player.player_last} | {player.position} | OVR: {player.overall} | Age: {player.age} | Salary: ${player.salary:,}")
                     confirm = input("Would you like to sign another player? (y/n): ")
                     if confirm.lower() == 'n':

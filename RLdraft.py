@@ -103,6 +103,7 @@ class Draft:
                 self.rookie_pool.remove(best)
                 best.drafted_by = team.team_name
                 best.acquired_date = self.league.calendar.current_date
+                self.league.refresh_minutes(team)
                 print(f"Pick {self.current_pick}: {team.team_name} selects {best.player_first} {best.player_last} | {best.position} | OVR: {best.overall} | Signed")
             else:
                 self.rookie_pool.remove(best)
@@ -194,6 +195,7 @@ class Draft:
                                     self.rookie_pool.remove(player)
                                     player.drafted_by = self.league.user_team.team_name
                                     player.acquired_date = self.league.calendar.current_date
+                                    self.league.refresh_minutes(self.league.user_team)
                                     self.current_pick += 1
                                     picked = True
                                     print(f"\nSigned! {player.player_first} {player.player_last} | {player.position} | OVR: {player.overall} | Age: {player.age} | Salary: ${player.salary:,}")

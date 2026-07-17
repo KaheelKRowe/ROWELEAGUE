@@ -20,13 +20,11 @@ class Team:
     # add player to team if roster spots and salary cap allow
     def add_player(self, player):
         if len(self.roster) < 15 and self.payroll + player.salary <= self.salary_cap:
-        if len(self.roster) < 15 and self.payroll + player.salary <= self.salary_cap:
             self.roster.append(player)
             self.payroll += player.salary
             return True
         return False
     
-    # remove player from team and adjust payroll and dead cap
     # remove player from team and adjust payroll and dead cap
     def remove_player(self, player_id):
         for player in self.roster:
@@ -41,14 +39,23 @@ class Team:
     # calculate available salary
     def available_salary(self):
         return self.salary_cap - self.payroll - self.dead_cap
-        return self.salary_cap - self.payroll - self.dead_cap
     
     # calculate average team overall
     def get_average_overall(self):
         if not self.roster:
             return 0
-        total_overall = sum(player.overall for player in self.roster)
-        return total_overall / len(self.roster)
+        
+        total_minutes = sum(player.minutes for player in self.roster)
+        if total_minutes == 0:
+            depth_score = sum(player.overall for player in self.roster) / len(self.roster)
+        else:
+            weighted_sum = sum(player.overall * player.minutes for player in self.roster)
+            depth_score = weighted_sum / total_minutes
+        
+        top_players = sorted(self.roster, key=lambda p: p.overall, reverse=True)[:3]
+        peak_score = sum(p.overall for p in top_players) / len(top_players)
+        
+        return (peak_score * 0.6) + (depth_score * 0.4)
     
     # Determines the positional needs for a team
     def get_positional_needs(self):
@@ -58,3 +65,29 @@ class Team:
             if count < 2:
                 needs.append(pos)
         return needs
+    
+    def assign_minutes(self):
+        MINUTES_FLOOR = 55
+        
+        for pos in ['PG', 'SG', 'SF', 'PF', 'C']:
+            players_at_pos = sorted(
+                [p for p in self.roster if p.position == pos],
+                key=lambda p: p.overall,
+                reverse=True
+            )
+            
+            if not players_at_pos:
+                continue
+            
+            weights = [max(0, p.overall - MINUTES_FLOOR) for p in players_at_pos]
+            total_weight = sum(weights)
+            
+            if total_weight == 0:
+                share = 48 / len(players_at_pos)
+                for player in players_at_pos:
+                    player.minutes = round(share)
+                continue
+            
+            for player, weight in zip(players_at_pos, weights):
+                share = weight / total_weight
+                player.minutes = round(48 * share)

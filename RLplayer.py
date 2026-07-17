@@ -12,14 +12,14 @@ class Player:
         'PF': {'Shooting': 0.2, 'Defense': 0.3, 'Passing': 0.2, 'Rebounding': 0.2, 'Athleticism': 0.1},
         'C': {'Shooting': 0.1, 'Defense': 0.4, 'Passing': 0.1, 'Rebounding': 0.3, 'Athleticism': 0.1}
     }
-    def __init__(self, player_first, player_last, position):
+    def __init__(self, player_first, player_last, position, target_overall=None, age=None):
         Player.id_counter += 1
         self.player_id = f"P{Player.id_counter:03d}"
         self.player_first = random.choice(player_first)
         self.player_last = random.choice(player_last)
         self.position = random.choice(position)
-        self.age = random.randint(19, 35)
-        self.target_overall = self.generate_target_overall()
+        self.age = age if age is not None else random.randint(19, 35)
+        self.target_overall = target_overall if target_overall is not None else self.generate_target_overall()
         self.ratings = self.generate_ratings_for_overall(self.target_overall)
         self.potential = self.calculate_potential()
         self.overall = self.calculate_overall()
@@ -28,6 +28,7 @@ class Player:
         self.contract_years = self.generate_contract_years()
         self.acquired_date = None
         self.last_traded_date = None
+        self.minutes = 0
 
 
     # Potential is based on age, with younger players having a chance at higher potential

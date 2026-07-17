@@ -56,3 +56,33 @@ player_last = ['Wayne', 'White', 'Jordan', 'James', 'Irving', 'Bryant', 'Curry',
                'Smith', 'West', 'Young', 'Martin', 'Mitchell', 'Bunyun', 'Robinson', 'Sharpe', 'Sims', 'Tatum', 'VanVleet', 'Collins']
 
 position = ['PG', 'SG', 'SF', 'PF', 'C']
+
+ROSTER_BLUEPRINTS = {
+    "Champion Favorite": [
+        ("elite", 92, 99), ("elite", 88, 94),
+        ("starter", 82, 88), ("starter", 80, 86), ("starter", 78, 84), ("starter", 76, 82), ("starter", 75, 80),
+        ("role", 72, 78), ("role", 70, 76), ("role", 68, 74), ("role", 65, 71), ("role", 62, 68)
+    ],
+    "Contender": [
+        ("elite", 88, 93),
+        ("starter", 82, 87), ("starter", 80, 85), ("starter", 78, 83), ("starter", 76, 81), ("starter", 74, 79), ("starter", 72, 77),
+        ("role", 70, 75), ("role", 68, 73), ("role", 65, 71), ("role", 62, 68), ("role", 60, 66)
+    ],
+    "Playoff Team": [
+        ("starter", 80, 85), ("starter", 78, 83), ("starter", 76, 81), ("starter", 74, 79), ("starter", 72, 77),
+        ("role", 70, 75), ("role", 68, 73), ("role", 66, 71), ("role", 64, 69), ("role", 62, 67), ("role", 60, 65), ("role", 58, 63)
+    ],
+    "Retooling": [
+        ("starter", 76, 81), ("starter", 74, 79), ("starter", 72, 77),
+        ("role", 68, 74), ("role", 66, 72), ("role", 64, 70), ("role", 62, 68), ("role", 60, 66),
+        ("role", 58, 64), ("role", 56, 62), ("role", 54, 60), ("role", 52, 58)
+    ],
+    "Rebuilding": [
+        ("starter", 70, 75), ("starter", 68, 73),
+        ("role", 66, 72), ("role", 64, 70), ("role", 62, 68), ("role", 60, 66), ("role", 58, 64),
+        ("role", 55, 62), ("role", 53, 60), ("role", 50, 58), ("role", 48, 55), ("role", 45, 52)
+    ],
+}
+
+ELITE_THRESHOLD = 88
+STARTER_THRESHOLD = 75

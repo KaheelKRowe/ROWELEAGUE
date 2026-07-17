@@ -98,6 +98,8 @@ class Trade:
         self.assets_offered.clear()
         self.assets_requested.clear()
 
+        self.league.refresh_minutes_if_in_season(self.team_a, self.team_b)
+
 # Assigns expected salary based on contract value
 def get_expected_salary(contract_value):
     if contract_value >= 90:
@@ -139,14 +141,14 @@ def calculate_trade_value(player):
 # Calculates the preseason score for a team
 def calculate_preseason_score(team):
     avg_ovr = team.get_average_overall()
-    normalized_ovr = (avg_ovr - 50) / 40
+    normalized_ovr = (avg_ovr - 65) / 30
     return normalized_ovr
 
 # Calculates the deadline score for a team
 def calculate_deadline_score(team):
     win_pct = team.wins / (team.wins + team.losses) if (team.wins + team.losses > 0) else 0.5
     avg_ovr = team.get_average_overall()
-    normalized_ovr = (avg_ovr - 50) / 40
+    normalized_ovr = (avg_ovr - 70) / 30
     score = (win_pct * 0.6) + (normalized_ovr * 0.4)
     return score
 
