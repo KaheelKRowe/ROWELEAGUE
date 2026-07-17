@@ -76,7 +76,9 @@ RLcalendar.py   # Season phases and date system
 RLdraft.py      # Draft logic and AI drafting
 RLui.py         # Command-line interface
 RLdata.py       # Data (teams, names, positions)
-main.py         # Entry point / game launcher
+RLmenu.py       # Entry point/game launcher
+RLplayoffs.py   # League Playoffs
+RLtrades.py     # League trading system
 ```
 
 ---
@@ -85,7 +87,7 @@ main.py         # Entry point / game launcher
 
 * Python
 * Object-Oriented Programming (OOP)
-* Randomized simulation / probability systems
+* Randomized simulation/probability systems
 * CLI (Command-Line Interface)
 
 ---
@@ -107,7 +109,7 @@ cd ROWELEAGUE
 3. Run the game:
 
 ```bash
-python main.py
+python RLmenu.py
 ```
 
 ---
