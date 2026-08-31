@@ -21,9 +21,9 @@ Playoffs will mostly be based off nba's playoff system.
 14 teams will be in the playoffs, the 1st seed from each conference will get a free round raising the stakes of the 1 seed.
 the remaining 10 will be in the draft lottery for the chance at the number 1 pick.
 
-West						East
+West				 East
 1						1				
-F						F	
+F						F
 	1				1
 	_				_
 4						4
