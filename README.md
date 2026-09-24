@@ -64,6 +64,19 @@ The system simulates a full league environment with AI-controlled teams, player 
   * Draft players based on roster weaknesses
   * Upgrade rosters dynamically
 
+### 🔄 Trade System
+
+* Player trade values based on rating, age, and potential
+* Team tiers that affect how CPU teams value trades
+* Eligibility cooldowns on recently acquired players
+* Multi-player trade proposals
+* CPU evaluation of incoming trade offers
+
+### 🏆 Playoffs
+
+* Playoff bracket based on regular season standings
+* Championship history tracking
+
 ---
 
 ## 🏗️ Project Structure
@@ -117,7 +130,6 @@ python RLmenu.py
 ## 🧠 Future Improvements
 
 * Player statistics and box scores
-* Trade system
 * Save/load game functionality
 * Improved UI (GUI or web-based interface)
 * More advanced AI decision-making
